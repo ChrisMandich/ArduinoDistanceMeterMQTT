@@ -1,0 +1,55 @@
+# Added to configuration.yaml
+# Connect to mosquitto MQTT to poll for sensor. 
+mqtt:
+   broker: <MQTT Hostname>
+   username: !secret mqtt_username
+   password: !secret mqtt_password
+sensor: 
+  - platform: mqtt
+    name: "ato_reservoir"
+    state_topic: "topic_ato_dist_perc"
+    unit_of_measurement: '%'
+
+
+# Added to automation.yaml
+# Using Zooz Zwave power strip to turn on/off ATO. 
+# Use Pushover for notifications.
+# Trigger alert if ATO is off for 60+ minutes, turn on if volume is greater than 20%
+# Trigger alert if reservoir volume is less than 20%
+- id: '1570415412949'
+  alias: ATO (Aquarium)
+  description: ''
+  trigger:
+  - entity_id: switch.zooz_zen20_v2_0_power_strip_switch_6
+    for: 00:60:00
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - above: '20'
+    condition: numeric_state
+    entity_id: sensor.ato_reservoir
+  action:
+  - data:
+      message: ATO off for 60 Minutes, turning it back on.
+      title: ATO Off
+    service: notify.hass_pushover
+  - data:
+      entity_id: switch.zooz_zen20_v2_0_power_strip_switch_6
+    service: switch.turn_on
+- id: '1584499840397'
+  alias: ATO Maintenance (Aquarium)
+  description: ''
+  trigger:
+  - below: '20'
+    entity_id: sensor.ato_reservoir
+    platform: numeric_state
+  condition: []
+  action:
+  - data:
+      message: ATO Reservoir Below 20%
+      title: Turning off ATO
+    service: notify.hass_pushover
+  - data:
+      entity_id: switch.zooz_zen20_v2_0_power_strip_switch_6
+    service: switch.turn_off
