@@ -1,0 +1,13 @@
+version: "3"
+services:
+  mosquitto: 
+    restart: always
+    container_name: mosquitto
+    network_mode: host
+    image: eclipse-mosquitto:latest 
+    volumes:
+      - /opt/mosquitto/config:/mosquitto/config:ro
+      - /opt/mosquitto/data:/mosquitto/data
+      - /opt/mosquitto/log:/mosquitto/log
+      - /etc/localtime:/etc/localtime:ro
+    
