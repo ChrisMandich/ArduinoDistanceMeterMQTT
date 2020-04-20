@@ -3,24 +3,14 @@
 */
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#ifndef STASSID
-#define STASSID "<SSID Name>"
-#define STAPSK  "<SSID PASSWORD>"
-#define MQTTSERVER  "<MQTT IP>"
-#define MQTTUSER  "<MQTT Username>"
-#define MQTTPASSWORD  "<MQTT Password>"
-#endif
+#include "secrets.h"
 
-const char* ssid     = STASSID;
-const char* password = STAPSK;
-const char* mqtt_server = MQTTSERVER;
-const char* mqtt_user = MQTTUSER;
-const char* mqtt_password = MQTTPASSWORD;
 const char* sensor_name = "MQTTDistSensor";
 
 // defines pins numbers
 const int echoPin_ato_dist = 5;  //D1
 const int trigPin_ato_dist = 4;  //D2
+const int input_pin = 13;  //D7
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -58,6 +48,10 @@ void setup_mqtt(){
   connect_mqtt();
 }
 
+void setup_liquid_sensor(){
+  pinMode(input_pin, INPUT);
+}
+
 void connect_mqtt(){
   // Loop until we're reconnected
   while (!client.connected()) {
@@ -72,6 +66,24 @@ void connect_mqtt(){
       Serial.println(" try again in 5 seconds");
       delay(5000);
     }
+  }
+}
+
+void get_liquid_sensor_status(){
+  int val;
+  char* mqtt_topic = "topic_liquid_sensor";
+  val = digitalRead(input_pin);
+
+  // Print Update to console.
+  Serial.print("Liqud Sensor Status: ");
+  Serial.println(String(val));
+
+  // Send Update to MQTT
+  if(val == 1){
+    client.publish(mqtt_topic, "true", true);
+  }
+  else{
+    client.publish(mqtt_topic, "false", true);
   }
 }
 
@@ -118,6 +130,7 @@ void setup() {
   setup_wifi();
   setup_mqtt();
   setup_sensor();
+  setup_liquid_sensor();
 }
 
 void loop() {
@@ -130,9 +143,10 @@ void loop() {
   Serial.println("XXXXXXXXXXXXXX");  
   Serial.println("");
   Serial.println("Loop Initialized.");
-
+  
   sensor_ato_dist();
-  // Check again in 1 minute
+  get_liquid_sensor_status();
+  
   delay(15000);
   Serial.println("Loop Completed.");  
 }
