@@ -13,13 +13,23 @@
    - gnd > NodeMCU GND
 
 ### Images
-*Bread Board*
+
+**Bread Board**
+
 ![Breadboard Complete](image/Breadboard-Complete.jpg)
-*HC-SR04, this should be HC-SR04p as NodeMCUv2 does not support 5v sensors*
+
+**HC-SR04, this should be HC-SR04p as NodeMCUv2 does not support 5v sensors**
+
 ![HC-SR04](image/HC-SR04.jpg)
-*NodeMCU*
+
+**NodeMCU**
+
 ![NodeMCUv2](image/NodeMCUv2.jpg)
-*NodeMCU Diagram*
-![NodeMCUv2 Diagram](image/NodeMCUv2_Diagram.png)
-*HASS Sensor Image*
-![HASS Sensor Image](image/HASS-Sensor-Image.PNG)
+
+**NodeMCU Diagram**
+
+![NodeMCUv2Diagram](image/NodeMCUv2_Diagram.png)
+
+**HASS Sensor Image**
+
+![HASSSensorImage](image/HASS-Sensor-Image.PNG)
